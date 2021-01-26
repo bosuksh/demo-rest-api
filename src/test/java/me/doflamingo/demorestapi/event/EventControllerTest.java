@@ -38,6 +38,7 @@ class EventControllerTest {
                     .maxPrice(300)
                     .limitOfEnrollment(100)
                     .eventStatus(EventStatus.DRAFT)
+                    .location("강남역 D2 스타트업 팩토리")
                     .build();
     //when
     mockMvc.perform(post("/api/events")
