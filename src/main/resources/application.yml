@@ -1,0 +1,13 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+spring:
+  jackson:
+    deserialization:
+     fail-on-unknown-properties: true
+
+
+
