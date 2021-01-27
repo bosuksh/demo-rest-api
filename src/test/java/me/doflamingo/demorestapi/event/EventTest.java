@@ -1,5 +1,6 @@
 package me.doflamingo.demorestapi.event;
 
+import me.doflamingo.demorestapi.event.domain.Event;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

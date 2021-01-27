@@ -1,6 +1,8 @@
-package me.doflamingo.demorestapi.event;
+package me.doflamingo.demorestapi.event.controller;
 
 import lombok.RequiredArgsConstructor;
+import me.doflamingo.demorestapi.event.repository.EventRepository;
+import me.doflamingo.demorestapi.event.domain.Event;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

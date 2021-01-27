@@ -1,6 +1,9 @@
 package me.doflamingo.demorestapi.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.doflamingo.demorestapi.event.domain.Event;
+import me.doflamingo.demorestapi.event.domain.EventStatus;
+import me.doflamingo.demorestapi.event.repository.EventRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
