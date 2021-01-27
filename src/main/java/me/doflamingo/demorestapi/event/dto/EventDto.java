@@ -21,6 +21,5 @@ public class EventDto {
     private int basePrice;  //(optional)
     private int maxPrice;   //(optional)
     private int limitOfEnrollment;
-    private boolean offline;
     private EventStatus eventStatus = EventStatus.DRAFT;
 }

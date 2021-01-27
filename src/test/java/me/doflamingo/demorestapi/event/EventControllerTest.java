@@ -5,6 +5,7 @@ import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.domain.EventStatus;
 import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -34,21 +35,12 @@ class EventControllerTest {
   @Autowired
   ObjectMapper objectMapper;
   
-  static ModelMapper modelMapper;
-
-  @MockBean
-  EventRepository eventRepository;
-  
-  @BeforeAll
-  static void setUp() {
-    modelMapper = new ModelMapper();
-  }
-
 
   @Test
   void createEvent() throws Exception {
     //given
-    EventDto eventDto = EventDto.builder()
+    Event event = Event.builder()
+            .id(100)
             .name("Spring")
             .description("Spring Study")
             .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
@@ -58,36 +50,25 @@ class EventControllerTest {
             .basePrice(100)
             .maxPrice(300)
             .limitOfEnrollment(100)
-            .eventStatus(EventStatus.DRAFT)
+            .free(true)
+            .offline(false)
+            .eventStatus(EventStatus.PUBLISHED)
             .location("강남역 D2 스타트업 팩토리")
             .build();
-    Event event = modelMapper.map(eventDto, Event.class);
-    Event savedEvent = Event.builder()
-            .id(1)
-            .description(eventDto.getDescription())
-            .beginEventDateTime(event.getBeginEventDateTime())
-            .endEventDateTime(event.getEndEventDateTime())
-            .beginEnrollmentDateTime(event.getBeginEnrollmentDateTime())
-            .closeEnrollmentDateTime(event.getCloseEnrollmentDateTime())
-            .basePrice(event.getBasePrice())
-            .maxPrice(event.getMaxPrice())
-            .limitOfEnrollment(event.getLimitOfEnrollment())
-            .eventStatus(event.getEventStatus())
-            .location(event.getLocation())
-            .build();
-    when(eventRepository.save(event)).thenReturn(savedEvent);
     //when
     mockMvc.perform(post("/api/events")
       .contentType(MediaType.APPLICATION_JSON)
       .accept(MediaTypes.HAL_JSON)
-      .content(objectMapper.writeValueAsString(eventDto))
+      .content(objectMapper.writeValueAsString(event))
     )
     //then
     .andDo(print())
     .andExpect(status().isCreated())
     .andExpect(header().exists(HttpHeaders.LOCATION))
     .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE+ ";charset=UTF-8"))
-    .andExpect(jsonPath("id").exists())
+    .andExpect(jsonPath("id").value(Matchers.not(100)))
+    .andExpect(jsonPath("free").value(Matchers.not(true)))
+    .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
     ;
 
   }
