@@ -28,6 +28,7 @@ public class EventController {
   @PostMapping
   public ResponseEntity<?> createEvents(@RequestBody EventDto eventDto) {
     Event event = modelMapper.map(eventDto,Event.class);
+    System.out.println(event);
     Event newEvent = eventRepository.save(event);
     URI uri = linkTo(EventController.class).slash(newEvent).toUri();
     return ResponseEntity

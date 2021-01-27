@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Builder @NoArgsConstructor @AllArgsConstructor
-@Getter @EqualsAndHashCode(of = "id")
-@Entity
+@Getter @Setter @EqualsAndHashCode(of = "id")
+@Entity @ToString
 public class Event {
 
   @Id @GeneratedValue

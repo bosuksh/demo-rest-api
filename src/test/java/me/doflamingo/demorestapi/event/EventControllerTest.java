@@ -39,8 +39,7 @@ class EventControllerTest {
   @Test
   void createEvent() throws Exception {
     //given
-    Event event = Event.builder()
-            .id(100)
+    EventDto eventDto = EventDto.builder()
             .name("Spring")
             .description("Spring Study")
             .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
@@ -50,8 +49,6 @@ class EventControllerTest {
             .basePrice(100)
             .maxPrice(300)
             .limitOfEnrollment(100)
-            .free(true)
-            .offline(false)
             .eventStatus(EventStatus.PUBLISHED)
             .location("강남역 D2 스타트업 팩토리")
             .build();
@@ -59,7 +56,7 @@ class EventControllerTest {
     mockMvc.perform(post("/api/events")
       .contentType(MediaType.APPLICATION_JSON)
       .accept(MediaTypes.HAL_JSON)
-      .content(objectMapper.writeValueAsString(event))
+      .content(objectMapper.writeValueAsString(eventDto))
     )
     //then
     .andDo(print())
@@ -70,6 +67,37 @@ class EventControllerTest {
     .andExpect(jsonPath("free").value(Matchers.not(true)))
     .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
     ;
-
+  }
+  @Test
+  void createEvent_with_badRequest() throws Exception {
+    //given
+    Event event = Event.builder()
+                    .id(100)
+                    .name("Spring")
+                    .description("Spring Study")
+                    .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
+                    .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
+                    .beginEnrollmentDateTime(LocalDateTime.of(2021,1,10,10,0))
+                    .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
+                    .basePrice(100)
+                    .maxPrice(300)
+                    .limitOfEnrollment(100)
+                    .free(true)
+                    .offline(false)
+                    .eventStatus(EventStatus.PUBLISHED)
+                    .location("강남역 D2 스타트업 팩토리")
+                    .build();
+    //when
+    mockMvc.perform(post("/api/events")
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .accept(MediaTypes.HAL_JSON)
+                      .content(objectMapper.writeValueAsString(event))
+    )
+      //then
+    .andDo(print())
+    .andExpect(status().isBadRequest())
+    .andExpect(header().exists(HttpHeaders.LOCATION))
+    .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE+ ";charset=UTF-8"))
+    ;
   }
 }
