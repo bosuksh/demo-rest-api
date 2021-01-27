@@ -2,12 +2,15 @@ package me.doflamingo.demorestapi.event.domain;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Builder @NoArgsConstructor @AllArgsConstructor
 @Getter @EqualsAndHashCode(of = "id")
+@Entity
 public class Event {
 
+  @Id @GeneratedValue
   private Integer id;
   private String name;
   private String description;
@@ -22,5 +25,6 @@ public class Event {
 
   private boolean offline;
   private boolean free;
+  @Enumerated(EnumType.STRING)
   private EventStatus eventStatus = EventStatus.DRAFT;
 }
