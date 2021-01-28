@@ -5,6 +5,7 @@ import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.domain.EventStatus;
 import me.doflamingo.demorestapi.event.dto.EventDto;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,9 +30,9 @@ class EventControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
-  
 
   @Test
+  @DisplayName("정상 Request")
   void createEvent() throws Exception {
     //given
     EventDto eventDto = EventDto.builder()
@@ -64,6 +65,7 @@ class EventControllerTest {
     ;
   }
   @Test
+  @DisplayName("DTO에 존재하지 않는 필드를 추가해서 Request")
   void createEvent_with_badRequest() throws Exception {
     //given
     Event event = Event.builder()
@@ -92,5 +94,15 @@ class EventControllerTest {
     .andDo(print())
     .andExpect(status().isBadRequest())
     ;
+  }
+
+  @Test
+  @DisplayName("빈 입력값으로 요청")
+  public void createEvent_with_empty_input() throws Exception{
+    EventDto eventDto = EventDto.builder().build();
+    mockMvc.perform(post("/api/events")
+      .content(objectMapper.writeValueAsString(eventDto))
+      .contentType(MediaType.APPLICATION_JSON))
+    .andExpect(status().isBadRequest());
   }
 }
