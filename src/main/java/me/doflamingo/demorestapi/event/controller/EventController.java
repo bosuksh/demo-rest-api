@@ -1,18 +1,20 @@
 package me.doflamingo.demorestapi.event.controller;
 
 import lombok.RequiredArgsConstructor;
+import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
-import me.doflamingo.demorestapi.event.domain.Event;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -26,11 +28,13 @@ public class EventController {
   private final ModelMapper modelMapper;
 
   @PostMapping
-  public ResponseEntity<?> createEvents(@RequestBody EventDto eventDto) {
+  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, BindingResult bindingResult) {
+    if(bindingResult.hasErrors()) {
+      return ResponseEntity.badRequest().build();
+    }
     Event event = modelMapper.map(eventDto,Event.class);
-    System.out.println(event);
     Event newEvent = eventRepository.save(event);
-    URI uri = linkTo(EventController.class).slash(newEvent).toUri();
+    URI uri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
     return ResponseEntity
             .created(uri)
             .body(newEvent);

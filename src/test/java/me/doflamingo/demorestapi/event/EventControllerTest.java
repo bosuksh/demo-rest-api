@@ -45,7 +45,6 @@ class EventControllerTest {
             .basePrice(100)
             .maxPrice(300)
             .limitOfEnrollment(100)
-            .eventStatus(EventStatus.PUBLISHED)
             .location("강남역 D2 스타트업 팩토리")
             .build();
     //when

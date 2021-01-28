@@ -1,25 +1,34 @@
 package me.doflamingo.demorestapi.event.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import me.doflamingo.demorestapi.event.domain.EventStatus;
+import lombok.*;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Builder @NoArgsConstructor @AllArgsConstructor
-@Getter
+@Data
 public class EventDto {
+
+    @NotBlank
     private String name;
+    @NotBlank
     private String description;
+    @NotNull
     private LocalDateTime beginEnrollmentDateTime;
+    @NotNull
     private LocalDateTime closeEnrollmentDateTime;
+    @NotNull
     private LocalDateTime beginEventDateTime;
+    @NotNull
     private LocalDateTime endEventDateTime;
     private String location; //(optional)
+    @Min(0)
     private int basePrice;  //(optional)
+    @Min(0)
     private int maxPrice;   //(optional)
+    @Min(0)
     private int limitOfEnrollment;
-    private EventStatus eventStatus = EventStatus.DRAFT;
 }
