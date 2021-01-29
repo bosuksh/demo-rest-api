@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
+import me.doflamingo.demorestapi.event.validator.EventValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,17 @@ public class EventController {
 
   private final EventRepository eventRepository;
   private final ModelMapper modelMapper;
+  private final EventValidator eventValidator;
 
   @PostMapping
-  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, BindingResult bindingResult) {
-    if(bindingResult.hasErrors()) {
+  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, Errors errors) {
+
+    eventValidator.validate(eventDto,errors);
+
+    if(errors.hasErrors()) {
       return ResponseEntity.badRequest().build();
     }
+
     Event event = modelMapper.map(eventDto,Event.class);
     Event newEvent = eventRepository.save(event);
     URI uri = linkTo(EventController.class).slash(newEvent.getId()).toUri();

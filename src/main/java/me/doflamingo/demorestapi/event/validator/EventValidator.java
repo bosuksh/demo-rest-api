@@ -1,10 +1,12 @@
 package me.doflamingo.demorestapi.event.validator;
 
 import me.doflamingo.demorestapi.event.dto.EventDto;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
 import java.time.LocalDateTime;
 
+@Component
 public class EventValidator {
 
   public void validate(EventDto eventDto, Errors errors) {
@@ -29,19 +31,19 @@ public class EventValidator {
     if(beginEnrollmentDateTime.isAfter(closeEnrollmentDateTime) ||
          beginEnrollmentDateTime.isAfter(beginEventDateTime) ||
          beginEnrollmentDateTime.isAfter(endEventDateTime)) {
-      errors.rejectValue("beginEnrollmentTime", "wrongValue", "BeginEnrollmentTime is wrong");
+      errors.reject("beginEnrollmentTime", "BeginEnrollmentTime is wrong");
     }
 
     //등록 종료 시간은 행사 시작 시간과 행사 종료 시간보다 빨라야 한다.
     if(closeEnrollmentDateTime.isAfter(beginEventDateTime) ||
          closeEnrollmentDateTime.isAfter(endEventDateTime))
     {
-      errors.rejectValue("closeEnrollmentTime", "wrongValue", "CloseEnrollmentTime is wrong");
+      errors.reject("closeEnrollmentTime",  "CloseEnrollmentTime is wrong");
     }
 
     //행사 시작 시간은 행사 종료 시간보다 빨라야 한다.
     if(beginEventDateTime.isAfter(endEventDateTime)) {
-      errors.rejectValue("beginEventTime", "wrongValue", "BeginEventTime is wrong");
+      errors.reject("beginEventTime", "BeginEventTime is wrong");
     }
   }
 

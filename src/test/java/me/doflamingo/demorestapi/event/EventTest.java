@@ -14,18 +14,18 @@ class EventTest {
   }
 
 
-//  @Test
-//  public void javaBean() {
-//    //given
-//    Event event = new Event();
-//    String name = "Spring";
-//    String description = "SpringBoot Rest API";
-//    //when
-//    event.setName(name);
-//    event.setDescription(description);
-//    //then
-//    assertThat(event.getName()).isEqualTo(name);
-//    assertThat(event.getDescription()).isEqualTo(description);
-//  }
+  @Test
+  public void javaBean() {
+    //given
+    Event event = new Event();
+    String name = "Spring";
+    String description = "SpringBoot Rest API";
+    //when
+    event.setName(name);
+    event.setDescription(description);
+    //then
+    assertThat(event.getName()).isEqualTo(name);
+    assertThat(event.getDescription()).isEqualTo(description);
+  }
 
 }

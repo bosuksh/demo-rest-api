@@ -104,4 +104,61 @@ class EventControllerTest {
       .contentType(MediaType.APPLICATION_JSON))
     .andExpect(status().isBadRequest());
   }
+
+  @Test
+  @DisplayName("DTO에 가격 필드를 잘못 설정해서 Request")
+  void createEvent_with_wrongPrice() throws Exception {
+    //given
+    EventDto eventDto = EventDto.builder()
+                          .name("Spring")
+                          .description("Spring Study")
+                          .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
+                          .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
+                          .beginEnrollmentDateTime(LocalDateTime.of(2021,1,10,10,0))
+                          .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
+                          .basePrice(400)
+                          .maxPrice(300)
+                          .limitOfEnrollment(100)
+                          .location("강남역 D2 스타트업 팩토리")
+                          .build();
+    //when
+    mockMvc.perform(post("/api/events")
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .accept(MediaTypes.HAL_JSON)
+                      .content(objectMapper.writeValueAsString(eventDto))
+    )
+      //then
+      .andDo(print())
+      .andExpect(status().isBadRequest())
+    ;
+  }
+
+  @Test
+  @DisplayName("DTO에 등록 시작 시간 필드를 잘못 설정해서 Request")
+  void createEvent_with_wrongBeginEnrollmentTime() throws Exception {
+    //given
+    EventDto eventDto = EventDto.builder()
+                          .name("Spring")
+                          .description("Spring Study")
+                          .beginEnrollmentDateTime(LocalDateTime.of(2021,1,21,10,0))
+                          .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
+                          .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
+                          .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
+                          .basePrice(400)
+                          .maxPrice(300)
+                          .limitOfEnrollment(100)
+                          .location("강남역 D2 스타트업 팩토리")
+                          .build();
+    //when
+    mockMvc.perform(post("/api/events")
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .accept(MediaTypes.HAL_JSON)
+                      .content(objectMapper.writeValueAsString(eventDto))
+    )
+      //then
+      .andDo(print())
+      .andExpect(status().isBadRequest())
+    ;
+  }
+
 }
