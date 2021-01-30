@@ -130,6 +130,9 @@ class EventControllerTest {
       //then
       .andDo(print())
       .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$[0].code").exists())
+      .andExpect(jsonPath("$[0].field").exists())
+      .andExpect(jsonPath("$[0].defaultMessage").exists())
     ;
   }
 
@@ -158,6 +161,9 @@ class EventControllerTest {
       //then
       .andDo(print())
       .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("$[0].code").exists())
+      .andExpect(jsonPath("$[0].field").exists())
+      .andExpect(jsonPath("$[0].defaultMessage").exists())
     ;
   }
 
