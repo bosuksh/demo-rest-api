@@ -27,5 +27,75 @@ class EventTest {
     assertThat(event.getName()).isEqualTo(name);
     assertThat(event.getDescription()).isEqualTo(description);
   }
+  @Test
+  public void freeTest() throws Exception {
+    /*
+    * Free일 때
+    * */
+    //given
+    Event event = Event.builder()
+                    .basePrice(0)
+                    .maxPrice(0)
+                    .build();
+    //when
+    event.update();
+    //then
+    assertThat(event.isFree()).isTrue();
+
+    /*
+     * MaxPrice 존재할 때
+     * */
+    //given
+    event = Event.builder()
+              .basePrice(0)
+              .maxPrice(100)
+              .build();
+    //when
+    event.update();
+    //then
+    assertThat(event.isFree()).isFalse();
+
+    /*
+     * basePrice 존재할 때
+     * */
+    //given
+    event = Event.builder()
+                    .basePrice(100)
+                    .maxPrice(0)
+                    .build();
+    //when
+    event.update();
+    //then
+    assertThat(event.isFree()).isFalse();
+  }
+
+  @Test
+  public void offlineTest() throws Exception {
+    //given
+    Event event = Event.builder()
+                    .location("서울")
+                    .build();
+    //when
+    event.update();
+    //then
+    assertThat(event.isOffline()).isTrue();
+
+    //given
+    event = Event.builder()
+                    .location("")
+                    .build();
+    //when
+    event.update();
+    //then
+    assertThat(event.isOffline()).isFalse();
+
+    //given
+    event = Event.builder()
+                    .build();
+    //when
+    event.update();
+    //then
+    assertThat(event.isOffline()).isFalse();
+  }
 
 }

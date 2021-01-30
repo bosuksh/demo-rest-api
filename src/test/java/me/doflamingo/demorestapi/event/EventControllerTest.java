@@ -59,8 +59,28 @@ class EventControllerTest {
     .andExpect(header().exists(HttpHeaders.LOCATION))
     .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE+ ";charset=UTF-8"))
     .andExpect(jsonPath("id").value(Matchers.not(100)))
-    .andExpect(jsonPath("free").value(Matchers.not(true)))
+    .andExpect(jsonPath("free").value(false))
+    .andExpect(jsonPath("offline").value(true))
     .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
+    ;
+
+    //given
+    eventDto.setLocation(null);
+    //when
+    mockMvc.perform(post("/api/events")
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .accept(MediaTypes.HAL_JSON)
+                      .content(objectMapper.writeValueAsString(eventDto))
+    )
+      //then
+      .andDo(print())
+      .andExpect(status().isCreated())
+      .andExpect(header().exists(HttpHeaders.LOCATION))
+      .andExpect(header().string(HttpHeaders.CONTENT_TYPE,MediaTypes.HAL_JSON_VALUE+ ";charset=UTF-8"))
+      .andExpect(jsonPath("id").value(Matchers.not(100)))
+      .andExpect(jsonPath("free").value(false))
+      .andExpect(jsonPath("offline").value(false))
+      .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
     ;
   }
 
