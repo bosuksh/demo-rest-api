@@ -63,6 +63,7 @@ class EventControllerTest {
     .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
     ;
   }
+
   @Test
   @DisplayName("DTO에 존재하지 않는 필드를 추가해서 Request")
   void createEvent_with_badRequest() throws Exception {
@@ -101,7 +102,10 @@ class EventControllerTest {
     EventDto eventDto = EventDto.builder().build();
     mockMvc.perform(post("/api/events")
       .content(objectMapper.writeValueAsString(eventDto))
-      .contentType(MediaType.APPLICATION_JSON))
+      .contentType(MediaType.APPLICATION_JSON)
+      .accept(MediaTypes.HAL_JSON)
+    )
+    .andDo(print())
     .andExpect(status().isBadRequest());
   }
 
@@ -131,7 +135,7 @@ class EventControllerTest {
       .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$[0].code").exists())
-      .andExpect(jsonPath("$[0].field").exists())
+      .andExpect(jsonPath("$[0].objectName").exists())
       .andExpect(jsonPath("$[0].defaultMessage").exists())
     ;
   }
@@ -147,8 +151,8 @@ class EventControllerTest {
                           .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
                           .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
                           .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
-                          .basePrice(400)
-                          .maxPrice(300)
+                          .basePrice(300)
+                          .maxPrice(400)
                           .limitOfEnrollment(100)
                           .location("강남역 D2 스타트업 팩토리")
                           .build();
@@ -162,7 +166,7 @@ class EventControllerTest {
       .andDo(print())
       .andExpect(status().isBadRequest())
       .andExpect(jsonPath("$[0].code").exists())
-      .andExpect(jsonPath("$[0].field").exists())
+      .andExpect(jsonPath("$[0].objectName").exists())
       .andExpect(jsonPath("$[0].defaultMessage").exists())
     ;
   }

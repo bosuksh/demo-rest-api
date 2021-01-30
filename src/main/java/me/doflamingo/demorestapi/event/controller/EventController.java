@@ -8,7 +8,6 @@ import me.doflamingo.demorestapi.event.validator.EventValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,11 +30,14 @@ public class EventController {
 
   @PostMapping
   public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, Errors errors) {
-
+    if(errors.hasErrors()) {
+      return ResponseEntity.badRequest().body(errors);
+    }
+    //@Valid에 해당하는 것 처리 이후 다른 validate도 수행해야한다.
     eventValidator.validate(eventDto,errors);
 
     if(errors.hasErrors()) {
-      return ResponseEntity.badRequest().build();
+      return ResponseEntity.badRequest().body(errors);
     }
 
     Event event = modelMapper.map(eventDto,Event.class);
