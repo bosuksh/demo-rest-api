@@ -1,10 +1,15 @@
 package me.doflamingo.demorestapi.event;
 
+import junitparams.JUnitParamsRunner;
 import me.doflamingo.demorestapi.event.domain.Event;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.runner.RunWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@RunWith(JUnitParamsRunner.class)
 class EventTest {
 
   @Test
@@ -27,75 +32,49 @@ class EventTest {
     assertThat(event.getName()).isEqualTo(name);
     assertThat(event.getDescription()).isEqualTo(description);
   }
-  @Test
-  public void freeTest() throws Exception {
-    /*
-    * Free일 때
-    * */
+
+  @ParameterizedTest(name = "{index} => basePrice={0}, maxPrice={1}, isFree={2}")
+  @MethodSource("parametersForFreeTest")
+  public void freeTest(int basePrice, int maxPrice, boolean isFree) throws Exception {
     //given
     Event event = Event.builder()
-                    .basePrice(0)
-                    .maxPrice(0)
+                    .basePrice(basePrice)
+                    .maxPrice(maxPrice)
                     .build();
     //when
     event.update();
     //then
-    assertThat(event.isFree()).isTrue();
-
-    /*
-     * MaxPrice 존재할 때
-     * */
-    //given
-    event = Event.builder()
-              .basePrice(0)
-              .maxPrice(100)
-              .build();
-    //when
-    event.update();
-    //then
-    assertThat(event.isFree()).isFalse();
-
-    /*
-     * basePrice 존재할 때
-     * */
-    //given
-    event = Event.builder()
-                    .basePrice(100)
-                    .maxPrice(0)
-                    .build();
-    //when
-    event.update();
-    //then
-    assertThat(event.isFree()).isFalse();
+    assertThat(event.isFree()).isEqualTo(isFree);
   }
 
-  @Test
-  public void offlineTest() throws Exception {
+  private static Object[] parametersForFreeTest() {
+    return new Object[] {
+      new Object[] {0, 0, true},
+      new Object[] {0, 100, false},
+      new Object[] {100, 200, false},
+      new Object[] {100, 0, false}
+    };
+  }
+
+  @ParameterizedTest(name = "{index} => location={0}, isOffline={1}")
+  @MethodSource("parameterForOfflineTest")
+  public void offlineTest(String location, boolean isOffline) throws Exception {
     //given
     Event event = Event.builder()
-                    .location("서울")
+                    .location(location)
                     .build();
     //when
     event.update();
     //then
-    assertThat(event.isOffline()).isTrue();
-
-    //given
-    event = Event.builder()
-                    .location("")
-                    .build();
-    //when
-    event.update();
-    //then
-    assertThat(event.isOffline()).isFalse();
-
-    //given
-    event = Event.builder()
-                    .build();
-    //when
-    event.update();
-    //then
-    assertThat(event.isOffline()).isFalse();
+    assertThat(event.isOffline()).isEqualTo(isOffline);
   }
 
+  private static Object[] parameterForOfflineTest() {
+    return new Object[] {
+      new Object[] {"서울", true},
+      new Object[] {null, false},
+      new Object[] {" ", false},
+      new Object[] {"", false},
+    };
+  }
 }
