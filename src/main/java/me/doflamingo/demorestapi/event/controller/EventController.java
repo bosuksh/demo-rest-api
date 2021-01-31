@@ -49,7 +49,6 @@ public class EventController {
     WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
     URI uri = selfLinkBuilder.toUri();
     EventResource eventResource = new EventResource(newEvent);
-    eventResource.add(selfLinkBuilder.withSelfRel());
     eventResource.add(linkTo(EventController.class).withRel("query-events"));
     eventResource.add(selfLinkBuilder.withRel("update-event"));
 
