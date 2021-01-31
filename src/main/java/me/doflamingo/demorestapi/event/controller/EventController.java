@@ -2,11 +2,13 @@ package me.doflamingo.demorestapi.event.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.doflamingo.demorestapi.event.domain.Event;
+import me.doflamingo.demorestapi.event.domain.EventResource;
 import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
 import me.doflamingo.demorestapi.event.validator.EventValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,10 +45,17 @@ public class EventController {
     Event event = modelMapper.map(eventDto,Event.class);
     event.update();
     Event newEvent = eventRepository.save(event);
-    URI uri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
+
+    WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+    URI uri = selfLinkBuilder.toUri();
+    EventResource eventResource = new EventResource(newEvent);
+    eventResource.add(selfLinkBuilder.withSelfRel());
+    eventResource.add(linkTo(EventController.class).withRel("query-events"));
+    eventResource.add(selfLinkBuilder.withRel("update-event"));
+
     return ResponseEntity
             .created(uri)
-            .body(newEvent);
+            .body(eventResource);
   }
 
 }
