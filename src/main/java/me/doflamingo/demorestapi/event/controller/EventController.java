@@ -7,6 +7,7 @@ import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
 import me.doflamingo.demorestapi.event.validator.EventValidator;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,7 @@ public class EventController {
     EventResource eventResource = new EventResource(newEvent);
     eventResource.add(linkTo(EventController.class).withRel("query-events"));
     eventResource.add(selfLinkBuilder.withRel("update-event"));
+    eventResource.add(Link.of("/docs/index.html#resources-create-event").withRel("profile"));
 
     return ResponseEntity
             .created(uri)
