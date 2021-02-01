@@ -1,6 +1,7 @@
 package me.doflamingo.demorestapi.event.controller;
 
 import lombok.RequiredArgsConstructor;
+import me.doflamingo.demorestapi.error.ErrorResource;
 import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.domain.EventResource;
 import me.doflamingo.demorestapi.event.dto.EventDto;
@@ -34,13 +35,13 @@ public class EventController {
   @PostMapping
   public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, Errors errors) {
     if(errors.hasErrors()) {
-      return ResponseEntity.badRequest().body(errors);
+      return badRequest(errors);
     }
     //@Valid에 해당하는 것 처리 이후 다른 validate도 수행해야한다.
     eventValidator.validate(eventDto,errors);
 
     if(errors.hasErrors()) {
-      return ResponseEntity.badRequest().body(errors);
+      return badRequest(errors);
     }
 
     Event event = modelMapper.map(eventDto,Event.class);
@@ -57,6 +58,10 @@ public class EventController {
     return ResponseEntity
             .created(uri)
             .body(eventResource);
+  }
+
+  private ResponseEntity<ErrorResource> badRequest(Errors errors) {
+    return ResponseEntity.badRequest().body(new ErrorResource(errors));
   }
 
 }
