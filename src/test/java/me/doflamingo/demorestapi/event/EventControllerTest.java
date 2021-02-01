@@ -1,6 +1,7 @@
 package me.doflamingo.demorestapi.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.doflamingo.demorestapi.common.RestDocsCustomizer;
 import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.domain.EventStatus;
 import me.doflamingo.demorestapi.event.dto.EventDto;
@@ -8,8 +9,10 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,12 +20,19 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
+@Import(RestDocsCustomizer.class)
 class EventControllerTest {
 
   @Autowired
@@ -65,6 +75,51 @@ class EventControllerTest {
     .andExpect(jsonPath("_links.self").exists())
     .andExpect(jsonPath("_links.query-events").exists())
     .andExpect(jsonPath("_links.update-event").exists())
+    .andDo(document("create-event"
+        ,links(linkWithRel("self").description("link to self")
+        ,linkWithRel("query-events").description("link to query event list")
+        ,linkWithRel("update-event").description("link to update an existing event")
+        ),
+      requestHeaders(
+        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type"),
+        headerWithName(HttpHeaders.ACCEPT).description("accept")
+      ),
+      requestFields(
+        fieldWithPath("name").description("행사명"),
+        fieldWithPath("description").description("행사 설명"),
+        fieldWithPath("beginEnrollmentDateTime").description("행사 등록 시작 시간"),
+        fieldWithPath("closeEnrollmentDateTime").description("행사 등록 마감 시간"),
+        fieldWithPath("beginEventDateTime").description("행사 시작 시간"),
+        fieldWithPath("endEventDateTime").description("행사 종료 시간"),
+        fieldWithPath("location").description("장소"),
+        fieldWithPath("basePrice").description("기본 가격"),
+        fieldWithPath("maxPrice").description("최대 가격"),
+        fieldWithPath("limitOfEnrollment").description("최대 참가 인원")
+      ),
+      responseHeaders(
+        headerWithName(HttpHeaders.LOCATION).description("생성된 uri 주소"),
+        headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
+      ),
+      responseFields(
+        fieldWithPath("id").description("ID"),
+        fieldWithPath("name").description("행사명"),
+        fieldWithPath("description").description("행사 설명"),
+        fieldWithPath("beginEnrollmentDateTime").description("행사 등록 시작 시간"),
+        fieldWithPath("closeEnrollmentDateTime").description("행사 등록 마감 시간"),
+        fieldWithPath("beginEventDateTime").description("행사 시작 시간"),
+        fieldWithPath("endEventDateTime").description("행사 종료 시간"),
+        fieldWithPath("location").description("장소"),
+        fieldWithPath("basePrice").description("기본 가격"),
+        fieldWithPath("maxPrice").description("최대 가격"),
+        fieldWithPath("limitOfEnrollment").description("최대 참가 인원"),
+        fieldWithPath("offline").description("오프라인 여부"),
+        fieldWithPath("free").description("무료 여부"),
+        fieldWithPath("eventStatus").description("이벤트 상태"),
+        fieldWithPath("_links.self.href").description("link to self"),
+        fieldWithPath("_links.query-events.href").description("link to query event list"),
+        fieldWithPath("_links.update-event.href").description("link to update an existing event")
+      )
+    ))
     ;
 
     //given
