@@ -5,6 +5,7 @@ import me.doflamingo.demorestapi.common.RestDocsCustomizer;
 import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.domain.EventStatus;
 import me.doflamingo.demorestapi.event.dto.EventDto;
+import me.doflamingo.demorestapi.event.repository.EventRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -42,6 +45,9 @@ class EventControllerTest {
 
   @Autowired
   ObjectMapper objectMapper;
+
+  @Autowired
+  EventRepository eventRepository;
 
   @Test
   @DisplayName("정상 Request")
@@ -250,5 +256,30 @@ class EventControllerTest {
       .andExpect(jsonPath("errors[0].defaultMessage").exists())
     ;
   }
+  @Test
+  @DisplayName("30개 리스트를 보여주고 PageSize 10개 2번째 페이지")
+  public void queryEvents() throws Exception {
+    //given
+    IntStream.range(0,30).forEach(this::generateEvent);
+    //when
+    mockMvc.perform(get("/api/events")
+        .param("page","1")
+        .param("size","10")
+        .param("sort","name,DESC"))
+      .andDo(print())
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("_links").exists())
+      .andExpect(jsonPath("page").exists())
+      .andExpect(jsonPath("eventList[0]._link.self").exists())
+    ;
+    //then
+  }
 
+  private void generateEvent(int index) {
+    Event event = Event.builder()
+                    .name("Event "+index)
+                    .description("Event Description"+ index)
+                    .build();
+    eventRepository.save(event);
+  }
 }

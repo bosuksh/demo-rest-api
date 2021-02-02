@@ -8,15 +8,16 @@ import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
 import me.doflamingo.demorestapi.event.validator.EventValidator;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -50,7 +51,7 @@ public class EventController {
 
     WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
     URI uri = selfLinkBuilder.toUri();
-    EventResource eventResource = new EventResource(newEvent);
+    var eventResource = EventResource.of(newEvent);
     eventResource.add(linkTo(EventController.class).withRel("query-events"));
     eventResource.add(selfLinkBuilder.withRel("update-event"));
     eventResource.add(Link.of("/docs/index.html#resources-create-event").withRel("profile"));
@@ -60,8 +61,16 @@ public class EventController {
             .body(eventResource);
   }
 
-  private ResponseEntity<ErrorResource> badRequest(Errors errors) {
-    return ResponseEntity.badRequest().body(new ErrorResource(errors));
+  @GetMapping
+  public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+    Page<Event> page = eventRepository.findAll(pageable);
+    var entityModels = assembler.toModel(page, e -> EventResource.of(e));
+
+    return ResponseEntity.ok(entityModels);
+  }
+
+  private ResponseEntity<EntityModel<Errors>> badRequest(Errors errors) {
+    return ResponseEntity.badRequest().body(ErrorResource.of(errors));
   }
 
 }
