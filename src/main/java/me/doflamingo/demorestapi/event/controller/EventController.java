@@ -11,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -69,8 +68,8 @@ public class EventController {
     return ResponseEntity.ok(entityModels);
   }
 
-  private ResponseEntity<EntityModel<Errors>> badRequest(Errors errors) {
-    return ResponseEntity.badRequest().body(ErrorResource.of(errors));
+  private ResponseEntity<ErrorResource> badRequest(Errors errors) {
+    return ResponseEntity.badRequest().body(new ErrorResource(errors));
   }
 
 }
