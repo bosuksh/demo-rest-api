@@ -270,7 +270,18 @@ class EventControllerTest {
       .andExpect(status().isOk())
       .andExpect(jsonPath("_links").exists())
       .andExpect(jsonPath("page").exists())
-      .andExpect(jsonPath("eventList[0]._link.self").exists())
+      .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+      .andExpect(jsonPath("_links.self").exists())
+      .andExpect(jsonPath("_links.profile").exists())
+      .andDo(document("query-events",
+        links(linkWithRel("self").description("link to self")
+        ,linkWithRel("first").description("link to first page")
+        ,linkWithRel("prev").description("link to prev page")
+        ,linkWithRel("next").description("link to next page")
+        ,linkWithRel("last").description("link to last page")
+        ,linkWithRel("profile").description("link to profile")
+        )
+      ))
     ;
     //then
   }

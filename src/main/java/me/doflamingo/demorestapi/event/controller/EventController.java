@@ -53,7 +53,7 @@ public class EventController {
     var eventResource = EventResource.of(newEvent);
     eventResource.add(linkTo(EventController.class).withRel("query-events"));
     eventResource.add(selfLinkBuilder.withRel("update-event"));
-    eventResource.add(Link.of("/docs/index.html#resources-create-event").withRel("profile"));
+    eventResource.add(getProfileLink("resources-create-event"));
 
     return ResponseEntity
             .created(uri)
@@ -64,12 +64,17 @@ public class EventController {
   public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
     Page<Event> page = eventRepository.findAll(pageable);
     var entityModels = assembler.toModel(page, e -> EventResource.of(e));
-
+    entityModels.add(getProfileLink("query-events"));
     return ResponseEntity.ok(entityModels);
   }
 
   private ResponseEntity<ErrorResource> badRequest(Errors errors) {
     return ResponseEntity.badRequest().body(new ErrorResource(errors));
   }
+
+  private Link getProfileLink(final String endPoint) {
+    return Link.of("/docs/index.html#" + endPoint).withRel("profile");
+  }
+
 
 }
