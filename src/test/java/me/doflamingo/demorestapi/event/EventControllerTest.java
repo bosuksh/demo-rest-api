@@ -1,6 +1,6 @@
 package me.doflamingo.demorestapi.event;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import me.doflamingo.demorestapi.common.BaseControllerTest;
 import me.doflamingo.demorestapi.common.RestDocsCustomizer;
 import me.doflamingo.demorestapi.event.domain.Event;
 import me.doflamingo.demorestapi.event.domain.EventStatus;
@@ -18,7 +18,6 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
@@ -37,13 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureRestDocs
 @Import(RestDocsCustomizer.class)
 @ActiveProfiles("test")
-class EventControllerTest {
+class EventControllerTest extends BaseControllerTest {
 
-  @Autowired
-  MockMvc mockMvc;
-
-  @Autowired
-  ObjectMapper objectMapper;
 
   @Autowired
   EventRepository eventRepository;
