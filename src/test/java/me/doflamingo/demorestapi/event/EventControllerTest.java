@@ -28,8 +28,7 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -324,6 +323,45 @@ class EventControllerTest {
     ;
   }
 
+  @Test
+  @DisplayName("이벤트 정상 수정")
+  public void updateEvent() throws Exception {
+    //given
+    generateEvent(1);
+
+    EventDto eventDto = EventDto.builder()
+                          .name("Spring")
+                          .description("Spring Study")
+                          .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
+                          .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
+                          .beginEnrollmentDateTime(LocalDateTime.of(2021,1,10,10,0))
+                          .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
+                          .basePrice(100)
+                          .maxPrice(300)
+                          .limitOfEnrollment(100)
+                          .location("강남역 D2 스타트업 팩토리")
+                          .build();
+    //when
+    mockMvc.perform(put("/api/events/1")
+      .accept(MediaTypes.HAL_JSON)
+      .contentType(MediaType.APPLICATION_JSON)
+      .content(objectMapper.writeValueAsString(eventDto)))
+    //then
+    .andDo(print())
+    .andExpect(status().isOk())
+    .andExpect(jsonPath("id").value(1))
+    .andExpect(jsonPath("name").value("Spring"))
+    .andExpect(jsonPath("_links.self").exists())
+    .andExpect(jsonPath("_links.profile").exists())
+    .andDo(document("update-event",
+        links(
+          linkWithRel("self").description("link to self"),
+          linkWithRel("profile").description("link to profile")
+        )
+      ))
+    ;
+  }
+
 
 
   private Event generateEvent(int index) {
@@ -331,6 +369,7 @@ class EventControllerTest {
                     .name("Event "+index)
                     .description("Event Description"+ index)
                     .build();
+
     return eventRepository.save(event);
   }
 }

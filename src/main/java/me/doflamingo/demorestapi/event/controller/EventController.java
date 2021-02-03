@@ -1,6 +1,5 @@
 package me.doflamingo.demorestapi.event.controller;
 
-import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import me.doflamingo.demorestapi.error.ErrorResource;
 import me.doflamingo.demorestapi.event.domain.Event;
@@ -47,8 +46,7 @@ public class EventController {
       return badRequest(errors);
     }
 
-    Event event = modelMapper.map(eventDto,Event.class);
-    event.update();
+    Event event = eventDtoToEntity(eventDto, new Event());
     Event newEvent = eventRepository.save(event);
 
     WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
@@ -64,15 +62,15 @@ public class EventController {
   }
 
   @GetMapping
-  public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+  public ResponseEntity<?> queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
     Page<Event> page = eventRepository.findAll(pageable);
-    var entityModels = assembler.toModel(page, e -> EventResource.of(e));
+    var entityModels = assembler.toModel(page, EventResource::of);
     entityModels.add(getProfileLink("query-events"));
     return ResponseEntity.ok(entityModels);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity getEvent(@PathVariable Integer id) throws NotFoundException {
+  public ResponseEntity<?> getEvent(@PathVariable Integer id) {
     Optional<Event> optionalEvent = eventRepository.findById(id);
     if(optionalEvent.isEmpty()) {
       return ResponseEntity.notFound().build();
@@ -82,12 +80,47 @@ public class EventController {
     return ResponseEntity.ok(entityModel);
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateEvent(@PathVariable Integer id, @RequestBody EventDto eventDto) {
+    //TODO: Validation Check
+
+    Optional<Event> optionalEvent = eventRepository.findById(id);
+    if(optionalEvent.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    Event beforeEvent = optionalEvent.get();
+    Event updatedEvent = eventDtoToEntity(eventDto, beforeEvent);
+    Event savedEvent = eventRepository.save(updatedEvent);
+    EntityModel<Event> entityModel = EventResource.of(savedEvent)
+                               .add(getProfileLink("update-event"));
+    return ResponseEntity.ok(entityModel);
+  }
+
+
   private ResponseEntity<ErrorResource> badRequest(Errors errors) {
     return ResponseEntity.badRequest().body(new ErrorResource(errors));
   }
 
   private Link getProfileLink(final String endPoint) {
-    return Link.of("/docs/index.html#" + endPoint).withRel("profile");
+    return Link.of("http://localhost:8080/docs/index.html#" + endPoint).withRel("profile");
+  }
+
+  private Event eventDtoToEntity(EventDto eventDto, Event event){
+    Event newEvent = Event.builder()
+                       .id(event.getId())
+                       .name(eventDto.getName())
+                       .description(eventDto.getDescription())
+                       .beginEnrollmentDateTime(eventDto.getBeginEnrollmentDateTime())
+                       .closeEnrollmentDateTime(eventDto.getCloseEnrollmentDateTime())
+                       .beginEventDateTime(eventDto.getBeginEventDateTime())
+                       .endEventDateTime(eventDto.getEndEventDateTime())
+                       .location(eventDto.getLocation())
+                       .basePrice(eventDto.getBasePrice())
+                       .maxPrice(eventDto.getMaxPrice())
+                       .limitOfEnrollment(eventDto.getLimitOfEnrollment())
+                       .build();
+    newEvent.update();
+    return newEvent;
   }
 
 
