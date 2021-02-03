@@ -362,6 +362,34 @@ class EventControllerTest {
     ;
   }
 
+  @Test
+  @DisplayName("이벤트 수정 NotFound Error")
+  public void updateEventWithBinding() throws Exception {
+    //given
+    generateEvent(1);
+    EventDto eventDto = EventDto.builder()
+                          .name("Spring")
+                          .description("Spring Study")
+                          .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
+                          .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
+                          .beginEnrollmentDateTime(LocalDateTime.of(2021,1,10,10,0))
+                          .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
+                          .basePrice(100)
+                          .maxPrice(300)
+                          .limitOfEnrollment(100)
+                          .location("강남역 D2 스타트업 팩토리")
+                          .build();
+    //when
+    mockMvc.perform(put("/api/events/3")
+                      .accept(MediaTypes.HAL_JSON)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(objectMapper.writeValueAsString(eventDto)))
+    //then
+    .andDo(print())
+    .andExpect(status().isNotFound())
+    ;
+  }
+
 
 
   private Event generateEvent(int index) {
