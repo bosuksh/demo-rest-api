@@ -266,6 +266,7 @@ class EventControllerTest {
         .param("page","1")
         .param("size","10")
         .param("sort","name,DESC"))
+      //then
       .andDo(print())
       .andExpect(status().isOk())
       .andExpect(jsonPath("_links").exists())
@@ -283,14 +284,32 @@ class EventControllerTest {
         )
       ))
     ;
-    //then
   }
 
-  private void generateEvent(int index) {
+  @Test
+  @DisplayName("리스트 조회 성공")
+  public void getEvent() throws Exception {
+    //given
+    generateEvent(1);
+    //when
+    mockMvc.perform(get("/api/events/1"))
+    //then
+    .andDo(print())
+    .andExpect(status().isOk())
+    .andExpect(jsonPath("id").exists())
+    .andExpect(jsonPath("name").exists())
+    .andExpect(jsonPath("_links.profile").exists())
+    .andExpect(jsonPath("_links.self").exists())
+    ;
+  }
+
+
+
+  private Event generateEvent(int index) {
     Event event = Event.builder()
                     .name("Event "+index)
                     .description("Event Description"+ index)
                     .build();
-    eventRepository.save(event);
+    return eventRepository.save(event);
   }
 }
