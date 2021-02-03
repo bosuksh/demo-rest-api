@@ -7,7 +7,6 @@ import me.doflamingo.demorestapi.event.domain.EventResource;
 import me.doflamingo.demorestapi.event.dto.EventDto;
 import me.doflamingo.demorestapi.event.repository.EventRepository;
 import me.doflamingo.demorestapi.event.validator.EventValidator;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
@@ -16,6 +15,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +31,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class EventController {
 
   private final EventRepository eventRepository;
-  private final ModelMapper modelMapper;
   private final EventValidator eventValidator;
 
   @PostMapping
-  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, Errors errors) {
+  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, BindingResult errors) {
     if(errors.hasErrors()) {
       return badRequest(errors);
     }
@@ -80,9 +79,18 @@ public class EventController {
     return ResponseEntity.ok(entityModel);
   }
 
+
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateEvent(@PathVariable Integer id, @RequestBody EventDto eventDto) {
-    //TODO: Validation Check
+  @Valid
+  public ResponseEntity<?> updateEvent(@PathVariable Integer id, @RequestBody @Valid EventDto eventDto, Errors errors) {
+    if(errors.hasErrors()) {
+      return badRequest(errors);
+    }
+    eventValidator.validate(eventDto,errors);
+
+    if(errors.hasErrors()) {
+      return badRequest(errors);
+    }
 
     Optional<Event> optionalEvent = eventRepository.findById(id);
     if(optionalEvent.isEmpty()) {
@@ -92,10 +100,9 @@ public class EventController {
     Event updatedEvent = eventDtoToEntity(eventDto, beforeEvent);
     Event savedEvent = eventRepository.save(updatedEvent);
     EntityModel<Event> entityModel = EventResource.of(savedEvent)
-                               .add(getProfileLink("update-event"));
+                                       .add(getProfileLink("update-event"));
     return ResponseEntity.ok(entityModel);
   }
-
 
   private ResponseEntity<ErrorResource> badRequest(Errors errors) {
     return ResponseEntity.badRequest().body(new ErrorResource(errors));

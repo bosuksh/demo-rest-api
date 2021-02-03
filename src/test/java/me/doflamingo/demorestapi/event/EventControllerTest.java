@@ -392,7 +392,7 @@ class EventControllerTest {
 
   @Test
   @DisplayName("이벤트 수정 Binding Error")
-  public void updateEventWithBinding() throws Exception {
+  public void updateEventWithBindingError() throws Exception {
     //given
     generateEvent(1);
     Event event = Event.builder()
@@ -409,10 +409,38 @@ class EventControllerTest {
                           .location("강남역 D2 스타트업 팩토리")
                           .build();
     //when
-    mockMvc.perform(put("/api/events/3")
+    mockMvc.perform(put("/api/events/1")
                       .accept(MediaTypes.HAL_JSON)
                       .contentType(MediaType.APPLICATION_JSON)
                       .content(objectMapper.writeValueAsString(event)))
+      //then
+      .andDo(print())
+      .andExpect(status().isBadRequest())
+    ;
+  }
+
+  @Test
+  @DisplayName("이벤트 수정 Validation Check")
+  public void updateEventWithValidationCheck() throws Exception {
+    //given
+    generateEvent(1);
+    EventDto eventDto = EventDto.builder()
+                          .name("Spring")
+                          .description("Spring Study")
+                          .beginEnrollmentDateTime(LocalDateTime.of(2021,1,21,10,0))
+                          .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
+                          .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
+                          .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
+                          .basePrice(300)
+                          .maxPrice(400)
+                          .limitOfEnrollment(100)
+                          .location("강남역 D2 스타트업 팩토리")
+                          .build();
+    //when
+    mockMvc.perform(put("/api/events/1")
+                      .accept(MediaTypes.HAL_JSON)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(objectMapper.writeValueAsString(eventDto)))
       //then
       .andDo(print())
       .andExpect(status().isBadRequest())
