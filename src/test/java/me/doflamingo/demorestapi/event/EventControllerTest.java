@@ -303,6 +303,19 @@ class EventControllerTest {
     ;
   }
 
+  @Test
+  @DisplayName("리스트 조회 실패")
+  public void getEvent404() throws Exception {
+    //given
+    generateEvent(1);
+    //when
+    mockMvc.perform(get("/api/events/400"))
+    //then
+    .andDo(print())
+    .andExpect(status().isNotFound())
+    ;
+  }
+
 
 
   private Event generateEvent(int index) {
