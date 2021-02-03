@@ -274,7 +274,7 @@ class EventControllerTest {
       .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
       .andExpect(jsonPath("_links.self").exists())
       .andExpect(jsonPath("_links.profile").exists())
-      .andDo(document("query-events",
+      .andDo(document("get-events",
         links(linkWithRel("self").description("link to self")
         ,linkWithRel("first").description("link to first page")
         ,linkWithRel("prev").description("link to prev page")
@@ -300,6 +300,14 @@ class EventControllerTest {
     .andExpect(jsonPath("name").exists())
     .andExpect(jsonPath("_links.profile").exists())
     .andExpect(jsonPath("_links.self").exists())
+    .andDo(
+      document("get-event",
+        links(
+          linkWithRel("self").description("link to self"),
+          linkWithRel("profile").description("link to profile")
+        )
+      )
+    )
     ;
   }
 

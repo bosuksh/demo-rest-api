@@ -1,5 +1,6 @@
 package me.doflamingo.demorestapi.event.controller;
 
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import me.doflamingo.demorestapi.error.ErrorResource;
 import me.doflamingo.demorestapi.event.domain.Event;
@@ -11,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
@@ -66,6 +69,17 @@ public class EventController {
     var entityModels = assembler.toModel(page, e -> EventResource.of(e));
     entityModels.add(getProfileLink("query-events"));
     return ResponseEntity.ok(entityModels);
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity getEvent(@PathVariable Integer id) throws NotFoundException {
+    Optional<Event> optionalEvent = eventRepository.findById(id);
+    if(optionalEvent.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    Event event = optionalEvent.get();
+    EntityModel<Event> entityModel = EventResource.of(event).add(getProfileLink("resources-events-get"));
+    return ResponseEntity.ok(entityModel);
   }
 
   private ResponseEntity<ErrorResource> badRequest(Errors errors) {
