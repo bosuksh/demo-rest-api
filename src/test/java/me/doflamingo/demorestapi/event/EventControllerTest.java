@@ -380,7 +380,7 @@ class EventControllerTest {
                           .location("강남역 D2 스타트업 팩토리")
                           .build();
     //when
-    mockMvc.perform(put("/api/events/3")
+    mockMvc.perform(put("/api/events/100")
                       .accept(MediaTypes.HAL_JSON)
                       .contentType(MediaType.APPLICATION_JSON)
                       .content(objectMapper.writeValueAsString(eventDto)))
@@ -395,27 +395,19 @@ class EventControllerTest {
   public void updateEventWithBindingError() throws Exception {
     //given
     generateEvent(1);
-    Event event = Event.builder()
-                          .id(1)
-                          .name("Spring")
-                          .description("Spring Study")
-                          .beginEventDateTime(LocalDateTime.of(2021,1,27,10,0))
-                          .endEventDateTime(LocalDateTime.of(2021,1,27,12,0))
-                          .beginEnrollmentDateTime(LocalDateTime.of(2021,1,10,10,0))
-                          .closeEnrollmentDateTime(LocalDateTime.of(2021,1,20,10,0))
-                          .basePrice(100)
-                          .maxPrice(300)
-                          .limitOfEnrollment(100)
-                          .location("강남역 D2 스타트업 팩토리")
-                          .build();
+    EventDto eventDto = new EventDto();
     //when
     mockMvc.perform(put("/api/events/1")
                       .accept(MediaTypes.HAL_JSON)
                       .contentType(MediaType.APPLICATION_JSON)
-                      .content(objectMapper.writeValueAsString(event)))
+                      .content(objectMapper.writeValueAsString(eventDto)))
       //then
       .andDo(print())
       .andExpect(status().isBadRequest())
+      .andExpect(jsonPath("errors[0].code").exists())
+      .andExpect(jsonPath("errors[0].objectName").exists())
+      .andExpect(jsonPath("errors[0].defaultMessage").exists())
+      .andExpect(jsonPath("_links.index").exists())
     ;
   }
 

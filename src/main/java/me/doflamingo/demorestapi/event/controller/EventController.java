@@ -64,7 +64,7 @@ public class EventController {
   public ResponseEntity<?> queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
     Page<Event> page = eventRepository.findAll(pageable);
     var entityModels = assembler.toModel(page, EventResource::of);
-    entityModels.add(getProfileLink("query-events"));
+    entityModels.add(getProfileLink("resources-events-list"));
     return ResponseEntity.ok(entityModels);
   }
 
@@ -100,7 +100,7 @@ public class EventController {
     Event updatedEvent = eventDtoToEntity(eventDto, beforeEvent);
     Event savedEvent = eventRepository.save(updatedEvent);
     EntityModel<Event> entityModel = EventResource.of(savedEvent)
-                                       .add(getProfileLink("update-event"));
+                                       .add(getProfileLink("resources-events-update"));
     return ResponseEntity.ok(entityModel);
   }
 
