@@ -30,7 +30,7 @@ public class Event {
   private EventStatus eventStatus = EventStatus.DRAFT;
 
   @ManyToOne
-  private Account account;
+  private Account manager;
 
   public void update() {
     this.free = (basePrice == 0 && maxPrice == 0);
