@@ -1,7 +1,7 @@
-package me.doflamingo.demorestapi.event.domain;
+package me.doflamingo.demorestapi.events.domain;
 
 
-import me.doflamingo.demorestapi.event.controller.EventController;
+import me.doflamingo.demorestapi.events.controller.EventController;
 import org.springframework.hateoas.EntityModel;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;

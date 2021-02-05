@@ -1,12 +1,12 @@
-package me.doflamingo.demorestapi.event.controller;
+package me.doflamingo.demorestapi.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.doflamingo.demorestapi.error.ErrorResource;
-import me.doflamingo.demorestapi.event.domain.Event;
-import me.doflamingo.demorestapi.event.domain.EventResource;
-import me.doflamingo.demorestapi.event.dto.EventDto;
-import me.doflamingo.demorestapi.event.repository.EventRepository;
-import me.doflamingo.demorestapi.event.validator.EventValidator;
+import me.doflamingo.demorestapi.events.domain.Event;
+import me.doflamingo.demorestapi.events.domain.EventResource;
+import me.doflamingo.demorestapi.events.dto.EventDto;
+import me.doflamingo.demorestapi.events.repository.EventRepository;
+import me.doflamingo.demorestapi.events.validator.EventValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;

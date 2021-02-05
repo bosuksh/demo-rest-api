@@ -1,6 +1,7 @@
-package me.doflamingo.demorestapi.event.domain;
+package me.doflamingo.demorestapi.events.domain;
 
 import lombok.*;
+import me.doflamingo.demorestapi.accounts.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,6 +28,9 @@ public class Event {
   private boolean free;
   @Enumerated(EnumType.STRING)
   private EventStatus eventStatus = EventStatus.DRAFT;
+
+  @ManyToOne
+  private Account account;
 
   public void update() {
     this.free = (basePrice == 0 && maxPrice == 0);

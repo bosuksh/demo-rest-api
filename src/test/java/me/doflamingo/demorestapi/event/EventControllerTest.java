@@ -2,10 +2,10 @@ package me.doflamingo.demorestapi.event;
 
 import me.doflamingo.demorestapi.common.BaseControllerTest;
 import me.doflamingo.demorestapi.common.RestDocsCustomizer;
-import me.doflamingo.demorestapi.event.domain.Event;
-import me.doflamingo.demorestapi.event.domain.EventStatus;
-import me.doflamingo.demorestapi.event.dto.EventDto;
-import me.doflamingo.demorestapi.event.repository.EventRepository;
+import me.doflamingo.demorestapi.events.domain.Event;
+import me.doflamingo.demorestapi.events.domain.EventStatus;
+import me.doflamingo.demorestapi.events.dto.EventDto;
+import me.doflamingo.demorestapi.events.repository.EventRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

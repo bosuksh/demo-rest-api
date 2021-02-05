@@ -1,6 +1,6 @@
-package me.doflamingo.demorestapi.event.validator;
+package me.doflamingo.demorestapi.events.validator;
 
-import me.doflamingo.demorestapi.event.dto.EventDto;
+import me.doflamingo.demorestapi.events.dto.EventDto;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 

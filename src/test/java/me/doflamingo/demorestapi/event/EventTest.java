@@ -1,7 +1,7 @@
 package me.doflamingo.demorestapi.event;
 
 import junitparams.JUnitParamsRunner;
-import me.doflamingo.demorestapi.event.domain.Event;
+import me.doflamingo.demorestapi.events.domain.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

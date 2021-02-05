@@ -1,4 +1,4 @@
-package me.doflamingo.demorestapi.event.dto;
+package me.doflamingo.demorestapi.events.dto;
 
 import lombok.*;
 
