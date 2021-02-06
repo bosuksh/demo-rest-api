@@ -25,25 +25,28 @@ class AuthServerConfigTest extends BaseControllerTest {
   @DisplayName("인증 토큰 받기")
   public void getAuthToken() throws Exception {
     //given
-    String email = "doflamingo@example.com";
+    String username = "doflamingo@example.com";
     String password = "password";
-    Account.builder()
-      .email(email)
-      .password(password)
-      .accountRoles(Set.of(AccountRole.ADMIN, AccountRole.USER))
-      .build();
+    Account account = Account.builder()
+                      .email(username)
+                      .password(password)
+                      .accountRoles(Set.of(AccountRole.ADMIN, AccountRole.USER))
+                      .build();
     String clientId = "myApp";
     String clientSecret = "pass";
+
+    accountService.saveAccount(account);
     //when
     this.mockMvc.perform(post("/oauth/token")
                            .with(httpBasic(clientId, clientSecret))
       .param("grant_type","password")
-      .param("email", email)
+      .param("username", username)
       .param("password", password)
     )
-      .andDo(print())
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("access_token").exists());
+    .andDo(print())
+    .andExpect(status().isOk())
+    .andExpect(jsonPath("access_token").exists())
+    .andExpect(jsonPath("refresh_token").exists());
     //then
   }
 }
