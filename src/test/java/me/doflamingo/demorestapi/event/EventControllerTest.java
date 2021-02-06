@@ -1,7 +1,6 @@
 package me.doflamingo.demorestapi.event;
 
 import me.doflamingo.demorestapi.common.BaseControllerTest;
-import me.doflamingo.demorestapi.common.RestDocsCustomizer;
 import me.doflamingo.demorestapi.events.domain.Event;
 import me.doflamingo.demorestapi.events.domain.EventStatus;
 import me.doflamingo.demorestapi.events.dto.EventDto;
@@ -10,14 +9,9 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
@@ -31,11 +25,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@Import(RestDocsCustomizer.class)
-@ActiveProfiles("test")
 class EventControllerTest extends BaseControllerTest {
 
 
