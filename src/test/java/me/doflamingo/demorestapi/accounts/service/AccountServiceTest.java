@@ -38,11 +38,11 @@ class AccountServiceTest {
                         .password(password)
                         .accountRoles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                         .build();
-    accountRepository.save(account);
+    this.accountService.saveAccount(account);
     //when
     UserDetails userDetails = accountService.loadUserByUsername(account.getEmail());
     //then
-    assertThat(passwordEncoder.matches(password,userDetails.getPassword())).isTrue();
+    assertThat(this.passwordEncoder.matches(password,userDetails.getPassword())).isTrue();
   }
 
   @Test
