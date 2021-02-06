@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
@@ -24,6 +25,8 @@ class AccountServiceTest {
   AccountService accountService;
   @Autowired
   AccountRepository accountRepository;
+  @Autowired
+  PasswordEncoder passwordEncoder;
 
   @Test
   @DisplayName("정상 인증 과정")
@@ -39,7 +42,7 @@ class AccountServiceTest {
     //when
     UserDetails userDetails = accountService.loadUserByUsername(account.getEmail());
     //then
-    assertThat(userDetails.getPassword()).isEqualTo(password);
+    assertThat(passwordEncoder.matches(password,userDetails.getPassword())).isTrue();
   }
 
   @Test
