@@ -71,6 +71,10 @@
             <artifactId>spring-restdocs-mockmvc</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/pl.pragmatists/JUnitParams -->
         <dependency>
             <groupId>pl.pragmatists</groupId>
