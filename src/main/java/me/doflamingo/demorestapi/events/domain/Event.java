@@ -1,7 +1,7 @@
 package me.doflamingo.demorestapi.events.domain;
 
 import lombok.*;
-import me.doflamingo.demorestapi.accounts.Account;
+import me.doflamingo.demorestapi.accounts.domain.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

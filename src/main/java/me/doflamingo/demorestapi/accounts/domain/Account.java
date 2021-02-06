@@ -1,4 +1,4 @@
-package me.doflamingo.demorestapi.accounts;
+package me.doflamingo.demorestapi.accounts.domain;
 
 
 import jdk.jfr.Enabled;
