@@ -1,13 +1,12 @@
 package me.doflamingo.demorestapi.accounts.domain;
 
 
-import jdk.jfr.Enabled;
 import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
 
-@Enabled
+@Entity
 @Getter @Setter @EqualsAndHashCode(of = "id")
 @Builder @NoArgsConstructor @AllArgsConstructor
 public class Account {
@@ -22,4 +21,5 @@ public class Account {
   @ElementCollection(fetch = FetchType.EAGER)
   @Enumerated(EnumType.STRING)
   private Set<AccountRole> accountRoles;
+
 }
