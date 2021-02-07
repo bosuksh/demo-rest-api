@@ -1,7 +1,5 @@
 package me.doflamingo.demorestapi.event;
 
-import me.doflamingo.demorestapi.accounts.domain.Account;
-import me.doflamingo.demorestapi.accounts.domain.AccountRole;
 import me.doflamingo.demorestapi.accounts.repository.AccountRepository;
 import me.doflamingo.demorestapi.accounts.service.AccountService;
 import me.doflamingo.demorestapi.common.BaseControllerTest;
@@ -21,7 +19,6 @@ import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -350,13 +347,14 @@ class EventControllerTest extends BaseControllerTest {
   @DisplayName("이벤트 조회 성공")
   public void getEvent() throws Exception {
     //given
-    Event event = generateEvent(0);
-    System.out.println(event.getId());
-    Event event1 = generateEvent(1);
-    System.out.println(event1.getId());
-    System.out.println(eventRepository.count());
+//    Event event = generateEvent(0);
+//    System.out.println(event.getId());
+//    Event event1 = generateEvent(1);
+//    System.out.println(event1.getId());
+//    System.out.println(eventRepository.count());
+    String id = getIdAfterCreateEvent(getAdminBearer());
     //when
-    mockMvc.perform(get("/api/events/"+event.getId()))
+    mockMvc.perform(get("/api/events/"+id))
     //then
     .andDo(print())
     .andExpect(status().isOk())
@@ -527,10 +525,10 @@ class EventControllerTest extends BaseControllerTest {
   @DisplayName("이벤트 수정 Binding Error")
   public void updateEventWithBindingError() throws Exception {
     //given
-    generateEvent(1);
+    String id = getIdAfterCreateEvent(getAdminBearer());
     EventDto eventDto = new EventDto();
     //when
-    mockMvc.perform(put("/api/events/1")
+    mockMvc.perform(put("/api/events/"+id)
                       .header(HttpHeaders.AUTHORIZATION, getAdminBearer())
                       .accept(MediaTypes.HAL_JSON)
                       .contentType(MediaType.APPLICATION_JSON)
@@ -608,12 +606,6 @@ class EventControllerTest extends BaseControllerTest {
     Event event = Event.builder()
                     .name("Event "+index)
                     .description("Event Description"+ index)
-                    .manager(Account.builder()
-                      .email(appProperties.getAdminEmail()+index)
-                      .password(appProperties.getAdminPassword())
-                      .accountRoles(Set.of(AccountRole.ADMIN, AccountRole.USER))
-                      .build()
-                    )
                     .build();
 
     return eventRepository.save(event);

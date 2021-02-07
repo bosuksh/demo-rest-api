@@ -98,8 +98,9 @@ public class EventController {
   @Valid
   public ResponseEntity<?> updateEvent(@PathVariable Integer id,
                                        @RequestBody @Valid EventDto eventDto,
-                                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser,
-                                       Errors errors) {
+                                       Errors errors,
+                                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser
+                                       ) {
     if(errors.hasErrors()) {
       return badRequest(errors);
     }
