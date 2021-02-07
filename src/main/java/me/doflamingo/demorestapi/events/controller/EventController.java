@@ -15,6 +15,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -113,6 +114,9 @@ public class EventController {
       return ResponseEntity.notFound().build();
     }
     Event beforeEvent = optionalEvent.get();
+    if(!beforeEvent.getManager().equals(currentUser)) {
+      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+    }
     Event updatedEvent = eventDtoToEntity(eventDto, beforeEvent, currentUser);
     Event savedEvent = eventRepository.save(updatedEvent);
     EntityModel<Event> entityModel = EventResource.of(savedEvent)
