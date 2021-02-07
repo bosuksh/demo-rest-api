@@ -1,7 +1,9 @@
 package me.doflamingo.demorestapi.events.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import me.doflamingo.demorestapi.accounts.domain.Account;
+import me.doflamingo.demorestapi.accounts.domain.AccountSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class Event {
   private EventStatus eventStatus = EventStatus.DRAFT;
 
   @ManyToOne(cascade = CascadeType.DETACH)
+  @JsonSerialize(using = AccountSerializer.class)
   private Account manager;
 
   public void update() {
