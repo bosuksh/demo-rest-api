@@ -29,7 +29,7 @@ public class Event {
   @Enumerated(EnumType.STRING)
   private EventStatus eventStatus = EventStatus.DRAFT;
 
-  @ManyToOne
+  @ManyToOne(cascade = CascadeType.DETACH)
   private Account manager;
 
   public void update() {

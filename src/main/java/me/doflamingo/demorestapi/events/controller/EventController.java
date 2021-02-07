@@ -78,13 +78,17 @@ public class EventController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getEvent(@PathVariable Integer id) {
+  public ResponseEntity<?> getEvent(@PathVariable Integer id,
+                                    @AuthenticationPrincipal(expression = "#this=='anonymousUser' ? null : account") Account currentUser) {
     Optional<Event> optionalEvent = eventRepository.findById(id);
     if(optionalEvent.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
     Event event = optionalEvent.get();
     EntityModel<Event> entityModel = EventResource.of(event).add(getProfileLink("resources-events-get"));
+    if(event.getManager().equals(currentUser)) {
+      entityModel.add(linkTo(EventController.class).slash(event.getId()).withRel("update-event"));
+    }
     return ResponseEntity.ok(entityModel);
   }
 
