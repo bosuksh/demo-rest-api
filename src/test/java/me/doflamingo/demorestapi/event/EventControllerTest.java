@@ -80,6 +80,7 @@ class EventControllerTest extends BaseControllerTest {
     .andExpect(jsonPath("id").value(Matchers.not(100)))
     .andExpect(jsonPath("free").value(false))
     .andExpect(jsonPath("offline").value(true))
+    .andExpect(jsonPath("manager").isNotEmpty())
     .andExpect(jsonPath("eventStatus").value(Matchers.not(EventStatus.PUBLISHED)))
     .andDo(document("create-event"
         ,links(linkWithRel("self").description("link to self")
@@ -312,8 +313,41 @@ class EventControllerTest extends BaseControllerTest {
   }
 
   @Test
-  @DisplayName("리스트 조회 성공")
-  public void getEvent() throws Exception {
+  @DisplayName("30개 리스트를 보여주고 PageSize 10개 2번째 페이지 with 인증")
+  public void queryEventsWithAuthentication() throws Exception {
+    //given
+    IntStream.range(0,30).forEach(this::generateEvent);
+    //when
+    mockMvc.perform(get("/api/events")
+                      .header(HttpHeaders.AUTHORIZATION, getBearer())
+                      .param("page","1")
+                      .param("size","10")
+                      .param("sort","name,DESC"))
+      //then
+      .andDo(print())
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("_links").exists())
+      .andExpect(jsonPath("page").exists())
+      .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+      .andExpect(jsonPath("_links.self").exists())
+      .andExpect(jsonPath("_links.profile").exists())
+      .andExpect(jsonPath("_links.create-event").exists())
+      .andDo(document("get-events",
+        links(linkWithRel("self").description("link to self")
+          ,linkWithRel("first").description("link to first page")
+          ,linkWithRel("prev").description("link to prev page")
+          ,linkWithRel("next").description("link to next page")
+          ,linkWithRel("last").description("link to last page")
+          ,linkWithRel("profile").description("link to profile")
+          ,linkWithRel("create-event").description("link to create-event")
+        )
+      ))
+    ;
+  }
+
+  @Test
+  @DisplayName("이벤트 조회 성공")
+  public void getEvents() throws Exception {
     //given
     Event event = generateEvent(0);
     System.out.println(event.getId());
@@ -337,6 +371,30 @@ class EventControllerTest extends BaseControllerTest {
         )
       )
     )
+    ;
+  }
+
+  @Test
+  @DisplayName("이벤트 조회 with 인증")
+  public void getEventsWithAuthentication() throws Exception {
+    //given
+    Event event = generateEvent(0);
+    System.out.println(event.getId());
+    Event event1 = generateEvent(1);
+    System.out.println(event1.getId());
+    System.out.println(eventRepository.count());
+    //when
+    mockMvc.perform(get("/api/events/"+event.getId())
+        .header(HttpHeaders.AUTHORIZATION, getBearer()))
+      //then
+      .andDo(print())
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("id").exists())
+      .andExpect(jsonPath("name").exists())
+      .andExpect(jsonPath("_links.profile").exists())
+      .andExpect(jsonPath("_links.self").exists())
+      .andExpect(jsonPath("_links.update-event").exists())
+
     ;
   }
 

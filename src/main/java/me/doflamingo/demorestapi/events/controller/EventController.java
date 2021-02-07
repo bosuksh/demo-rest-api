@@ -1,6 +1,7 @@
 package me.doflamingo.demorestapi.events.controller;
 
 import lombok.RequiredArgsConstructor;
+import me.doflamingo.demorestapi.accounts.domain.Account;
 import me.doflamingo.demorestapi.error.ErrorResource;
 import me.doflamingo.demorestapi.events.domain.Event;
 import me.doflamingo.demorestapi.events.domain.EventResource;
@@ -15,6 +16,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +36,9 @@ public class EventController {
   private final EventValidator eventValidator;
 
   @PostMapping
-  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto, BindingResult errors) {
+  public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto,
+                                        BindingResult errors,
+                                        @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser) {
     if(errors.hasErrors()) {
       return badRequest(errors);
     }
@@ -45,7 +49,7 @@ public class EventController {
       return badRequest(errors);
     }
 
-    Event event = eventDtoToEntity(eventDto, new Event());
+    Event event = eventDtoToEntity(eventDto, new Event(), currentUser);
     Event newEvent = eventRepository.save(event);
 
     WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
@@ -61,10 +65,15 @@ public class EventController {
   }
 
   @GetMapping
-  public ResponseEntity<?> queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+  public ResponseEntity<?> queryEvents(Pageable pageable,
+                                       PagedResourcesAssembler<Event> assembler,
+                                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser) {
     Page<Event> page = eventRepository.findAll(pageable);
     var entityModels = assembler.toModel(page, EventResource::of);
     entityModels.add(getProfileLink("resources-events-list"));
+    if(currentUser != null) {
+      entityModels.add(linkTo(EventController.class).withRel("create-event"));
+    }
     return ResponseEntity.ok(entityModels);
   }
 
@@ -82,7 +91,10 @@ public class EventController {
 
   @PutMapping("/{id}")
   @Valid
-  public ResponseEntity<?> updateEvent(@PathVariable Integer id, @RequestBody @Valid EventDto eventDto, Errors errors) {
+  public ResponseEntity<?> updateEvent(@PathVariable Integer id,
+                                       @RequestBody @Valid EventDto eventDto,
+                                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser,
+                                       Errors errors) {
     if(errors.hasErrors()) {
       return badRequest(errors);
     }
@@ -97,7 +109,7 @@ public class EventController {
       return ResponseEntity.notFound().build();
     }
     Event beforeEvent = optionalEvent.get();
-    Event updatedEvent = eventDtoToEntity(eventDto, beforeEvent);
+    Event updatedEvent = eventDtoToEntity(eventDto, beforeEvent, currentUser);
     Event savedEvent = eventRepository.save(updatedEvent);
     EntityModel<Event> entityModel = EventResource.of(savedEvent)
                                        .add(getProfileLink("resources-events-update"));
@@ -112,7 +124,7 @@ public class EventController {
     return Link.of("http://localhost:8080/docs/index.html#" + endPoint).withRel("profile");
   }
 
-  private Event eventDtoToEntity(EventDto eventDto, Event event){
+  private Event eventDtoToEntity(EventDto eventDto, Event event, Account account){
     Event newEvent = Event.builder()
                        .id(event.getId())
                        .name(eventDto.getName())
@@ -124,6 +136,7 @@ public class EventController {
                        .location(eventDto.getLocation())
                        .basePrice(eventDto.getBasePrice())
                        .maxPrice(eventDto.getMaxPrice())
+                       .manager(account)
                        .limitOfEnrollment(eventDto.getLimitOfEnrollment())
                        .build();
     newEvent.update();
