@@ -30,20 +30,23 @@ public class AppConfig {
     @Bean
     public ApplicationRunner appRunner() {
         return new ApplicationRunner() {
+
             @Autowired
             AccountService accountService;
 
+            @Autowired
+            AppProperties appProperties;
 
             @Override
-            public void run(ApplicationArguments args) throws Exception {
+            public void run(ApplicationArguments args) {
                 Account admin= Account.builder()
-                                    .email("admin@example.com")
-                                    .password("admin")
+                                    .email(appProperties.getAdminEmail())
+                                    .password(appProperties.getAdminPassword())
                                     .accountRoles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                                     .build();
                 Account user= Account.builder()
-                                 .email("user@example.com")
-                                 .password("user")
+                                 .email(appProperties.getUserEmail())
+                                 .password(appProperties.getUserPassword())
                                  .accountRoles(Set.of(AccountRole.USER))
                                  .build();
                 accountService.saveAccount(admin);

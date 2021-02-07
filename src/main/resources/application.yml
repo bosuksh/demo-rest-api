@@ -30,3 +30,11 @@ logging:
     org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+my-app:
+  admin-email: admin@example.com
+  admin-password: admin
+  user-email: user@example.com
+  user-password: user
+  client-id: myapp
+  client-secret: pass
