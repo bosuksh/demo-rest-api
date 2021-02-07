@@ -1,10 +1,9 @@
 package me.doflamingo.demorestapi.event;
 
-import me.doflamingo.demorestapi.accounts.domain.Account;
-import me.doflamingo.demorestapi.accounts.domain.AccountRole;
 import me.doflamingo.demorestapi.accounts.repository.AccountRepository;
 import me.doflamingo.demorestapi.accounts.service.AccountService;
 import me.doflamingo.demorestapi.common.BaseControllerTest;
+import me.doflamingo.demorestapi.config.AppProperties;
 import me.doflamingo.demorestapi.events.domain.Event;
 import me.doflamingo.demorestapi.events.domain.EventStatus;
 import me.doflamingo.demorestapi.events.dto.EventDto;
@@ -21,7 +20,6 @@ import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
@@ -41,14 +39,14 @@ class EventControllerTest extends BaseControllerTest {
   EventRepository eventRepository;
   @Autowired
   AccountRepository accountRepository;
-
   @Autowired
   AccountService accountService;
+  @Autowired
+  AppProperties appProperties;
 
   @BeforeEach
   public void setUp() {
     eventRepository.deleteAll();
-    accountRepository.deleteAll();
   }
 
   @Test
@@ -491,22 +489,11 @@ class EventControllerTest extends BaseControllerTest {
   }
 
   public String getAuthToken() throws Exception {
-    String username = "doflamingo@example.com";
-    String password = "password";
-    Account account = Account.builder()
-                        .email(username)
-                        .password(password)
-                        .accountRoles(Set.of(AccountRole.ADMIN, AccountRole.USER))
-                        .build();
-    String clientId = "myApp";
-    String clientSecret = "pass";
-
-    accountService.saveAccount(account);
     MvcResult result = this.mockMvc.perform(post("/oauth/token")
-                                                 .with(httpBasic(clientId, clientSecret))
+                                                 .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
                                                  .param("grant_type", "password")
-                                                 .param("username", username)
-                                                 .param("password", password)
+                                                 .param("username",appProperties.getAdminEmail())
+                                                 .param("password", appProperties.getAdminPassword())
     ).andReturn();
     var responseBody = result.getResponse().getContentAsString();
     Jackson2JsonParser parser = new Jackson2JsonParser();
