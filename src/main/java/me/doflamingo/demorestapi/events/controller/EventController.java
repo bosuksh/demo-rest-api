@@ -2,6 +2,7 @@ package me.doflamingo.demorestapi.events.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.doflamingo.demorestapi.accounts.domain.Account;
+import me.doflamingo.demorestapi.accounts.domain.CurrentUser;
 import me.doflamingo.demorestapi.error.ErrorResource;
 import me.doflamingo.demorestapi.events.domain.Event;
 import me.doflamingo.demorestapi.events.domain.EventResource;
@@ -17,7 +18,6 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +39,7 @@ public class EventController {
   @PostMapping
   public ResponseEntity<?> createEvents(@RequestBody @Valid EventDto eventDto,
                                         BindingResult errors,
-                                        @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser) {
+                                        @CurrentUser Account currentUser) {
     if(errors.hasErrors()) {
       return badRequest(errors);
     }
@@ -68,7 +68,7 @@ public class EventController {
   @GetMapping
   public ResponseEntity<?> queryEvents(Pageable pageable,
                                        PagedResourcesAssembler<Event> assembler,
-                                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser) {
+                                       @CurrentUser Account currentUser) {
     Page<Event> page = eventRepository.findAll(pageable);
     var entityModels = assembler.toModel(page, EventResource::of);
     entityModels.add(getProfileLink("resources-events-list"));
@@ -80,7 +80,7 @@ public class EventController {
 
   @GetMapping("/{id}")
   public ResponseEntity<?> getEvent(@PathVariable Integer id,
-                                    @AuthenticationPrincipal(expression = "#this=='anonymousUser' ? null : account") Account currentUser) {
+                                    @CurrentUser Account currentUser) {
     Optional<Event> optionalEvent = eventRepository.findById(id);
     if(optionalEvent.isEmpty()) {
       return ResponseEntity.notFound().build();
@@ -99,7 +99,7 @@ public class EventController {
   public ResponseEntity<?> updateEvent(@PathVariable Integer id,
                                        @RequestBody @Valid EventDto eventDto,
                                        Errors errors,
-                                       @AuthenticationPrincipal(expression = "#this == 'anonymousUser'? null:account") Account currentUser
+                                       @CurrentUser Account currentUser
                                        ) {
     if(errors.hasErrors()) {
       return badRequest(errors);
