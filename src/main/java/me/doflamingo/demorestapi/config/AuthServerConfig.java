@@ -21,6 +21,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
   private final AccountService accountService;
   private final TokenStore tokenStore;
   private final AuthenticationManager authenticationManager;
+  private final AppProperties appProperties;
 
   @Override
   public void configure(AuthorizationServerSecurityConfigurer security) {
@@ -30,10 +31,10 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
   @Override
   public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
     clients.inMemory()
-      .withClient("myApp")
+      .withClient(appProperties.getClientId())
       .authorizedGrantTypes("password","refresh_token")
       .scopes("read","write")
-      .secret(passwordEncoder.encode("pass"))
+      .secret(passwordEncoder.encode(appProperties.getClientSecret()))
       .accessTokenValiditySeconds(10 * 60)
       .refreshTokenValiditySeconds(60 * 60);
   }
