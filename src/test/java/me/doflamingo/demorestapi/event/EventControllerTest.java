@@ -45,7 +45,7 @@ class EventControllerTest extends BaseControllerTest {
 
 
   @Test
-  @DisplayName("정상 Request")
+  @DisplayName("이벤트 생성 정상 Request")
   void createEvent() throws Exception {
     //given
     EventDto eventDto = EventDto.builder()
